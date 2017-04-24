@@ -80,7 +80,7 @@ $sections = $app->get_main_sections( $search_q );
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script> <!-- Toastr Lib  External -->
 
 	<script src="js/dontu.js"></script> <!-- Andrei Dontu Scripts -->
-	<title>Brasoft | Web</title>
+	<title>Andrei Dontu | Web</title>
 </head>
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
@@ -92,17 +92,31 @@ $sections = $app->get_main_sections( $search_q );
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">Andrei Dontu</a>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
+                    <?php
+                    foreach ( $sections as $section ) {
+                    ?>
+                    <li>
+                        <a id="section_link_<?php echo $section['id'] ?>" href="#<?php echo $section['name'] ?>"><span id="section_name_<?php echo $section['id'] ?>" ><?php echo $section['value'] ?></span>
+                        <?php if ( $app->is_logged() ) { ?>
+                            <span class="btn-group" style="position: relative; display: inline-block; width: 100px; padding-left: 10px;" >
+                                <button class="btn btn-sm btn-primary" onclick="return editSection( $(this), <?php echo $section['id'] ?>);"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-sm btn-danger" onclick="return deleteSection(<?php echo $section['id'] ?>);"><i class="fa fa-trash-o"></i></button>
+                            </span>
+                        <?php } ?>
+                        </a>
+                    </li>
+                    <?php } ?>
+
+                    <?php if ( $app->is_logged() ) { ?>
+                        <li><a href="?post&logout=<?php echo $app->username; ?>"><i class="fa fa-lock"></i> Log out</a></li>
+                    <?php } else { ?>
+                        <li><a href="#" data-toggle="modal" data-target="#loginModal"><i class="fa fa-user-circle-o"></i> Log in</a></li>
+                    <?php } ?>
+                </ul>
 			</div>
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-				<ul class="nav navbar-nav navbar-right">
-                    <li><a href="http://178.62.225.158:8814/" target="_blank"><i class="fa fa-terminal"></i> Consola</a></li>
-					<?php if ( $app->is_logged() ) { ?>
-						<li><a href="?post&logout=<?php echo $app->username; ?>"><i class="fa fa-lock"></i> Log out</a></li>
-					<?php } else { ?>
-						<li><a href="#" data-toggle="modal" data-target="#loginModal"><i class="fa fa-user-circle-o"></i> Log in</a></li>
-					<?php } ?>
-				</ul>
 				<form class="navbar-form navbar-right" method="get" action="?query">
 					<div class="form-group">
 						<div class="input-group">
@@ -116,57 +130,29 @@ $sections = $app->get_main_sections( $search_q );
 			</div>
 		</div>
 	</nav>
-	<header>
-		<h1><span id="main-title"><?php echo ( isset( $layout['edit-title'] ) )?$layout['edit-title']['value']:'Andrei Dontu'; ?></span>
-			<?php if ( $app->is_logged() ) { ?>
-			<span class="btn-group inline"><button id="edit-main-title" data-pk="<?php echo ( isset( $layout['edit-title'] ) )?$layout['edit-title']['id']:0; ?>" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></button></span>
-			<?php } ?>
-		</h1>
-		<h2><span id="sub-title"><?php echo ( isset( $layout['edit-sub-title'] ) )?$layout['edit-sub-title']['value']:'Titlu Licenta'; ?></span>
-			<?php if ( $app->is_logged() ) { ?>
-			<span class="btn-group inline"><button id="edit-sub-title" data-pk="<?php echo ( isset( $layout['edit-sub-title'] ) )?$layout['edit-sub-title']['id']:0; ?>" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></button></span>
-			<?php } ?>
-		</h2>
-	</header>
-
 	<div class="jumbotron">
-		<form>
-			<div class="col-md-6 col-md-offset-3">
-                <form method="get" action="?query">
-                    <div class="input-group input-group-lg">
-                        <input type="text" name="search" class="form-control" placeholder="Cauta ..." value="<?php echo $search_q; ?>">
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-default btn-sm"><i class="fa fa-search"></i></button>
-                        </span>
-                    </div>
-                </form>
-			</div>
-		</form>
+        <header>
+            <h1><span id="main-title"><?php echo ( isset( $layout['edit-title'] ) )?$layout['edit-title']['value']:'Andrei Dontu'; ?></span>
+                <?php if ( $app->is_logged() ) { ?>
+                    <span class="btn-group inline"><button id="edit-main-title" data-pk="<?php echo ( isset( $layout['edit-title'] ) )?$layout['edit-title']['id']:0; ?>" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></button></span>
+                <?php } ?>
+            </h1>
+            <h2><span id="sub-title"><?php echo ( isset( $layout['edit-sub-title'] ) )?$layout['edit-sub-title']['value']:'Titlu Licenta'; ?></span>
+                <?php if ( $app->is_logged() ) { ?>
+                    <span class="btn-group inline"><button id="edit-sub-title" data-pk="<?php echo ( isset( $layout['edit-sub-title'] ) )?$layout['edit-sub-title']['id']:0; ?>" class="btn btn-sm btn-primary"><i class="fa fa-pencil"></i></button></span>
+                <?php } ?>
+            </h2>
+        </header>
 	</div>
 
 	<section class="cd-faq">
+        <?php if ( $app->is_logged() ) { ?>
 		<ul class="cd-faq-categories">
-			<?php
-			foreach ( $sections as $section ) {
-			?>
-			<li style="position: relative;">
-				<a id="section_link_<?php echo $section['id'] ?>" class="selected" href="#<?php echo $section['name'] ?>"><span id="section_name_<?php echo $section['id'] ?>" ><?php echo $section['value'] ?></span></a>
-				<?php if ( $app->is_logged() ) { ?>
-					<span class="btn-group" style="position: absolute; top: 0; right: 10px;" >
-						<button class="btn btn-sm btn-primary" onclick="return editSection( $(this), <?php echo $section['id'] ?>);"><i class="fa fa-pencil"></i></button>
-						<button class="btn btn-sm btn-danger" onclick="return deleteSection(<?php echo $section['id'] ?>);"><i class="fa fa-trash-o"></i></button>
-					</span>
-				<?php } ?>
-			</li>
-			<?php
-			}
-			?>
-			<?php if ( $app->is_logged() ) { ?>
 			<li class="new-section"><a href="#" id="new-section-name"><i class="fa fa-plus-circle"></i> Adauga Sectiune</a></li>
-			<?php } ?>
 		</ul> <!-- cd-faq-categories -->
+        <?php } ?>
 
-		<div class="cd-faq-items">
+		<div class="cd-faq-items <?php if ( $app->is_logged() ) { echo 'has-padding';  }?>">
 			<?php
 			if( isset( $search_q ) && empty( $sections ) ) {
                 echo '<div class="alert alert-warning" role="alert"><i class="fa fa-info-circle"></i> Nu am gasit informatia cautata. Va rugam sa reincercati!</div>';

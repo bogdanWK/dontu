@@ -16,8 +16,6 @@ Primary style
 body {
   font-size: 100%;
   font-family: "Open Sans", sans-serif;
-  color: #4e5359;
-  background-color: #f3f3f5;
 }
 body::after {
   /* overlay layer visible on small devices when the right panel slides in */
@@ -47,7 +45,7 @@ body.cd-overlay::after {
 }
 
 a {
-  color: #3498DB;
+  /*color: #3498DB;*/
   text-decoration: none;
 }
 
@@ -61,7 +59,7 @@ header {
   height: 180px;
   line-height: 180px;
   text-align: center;
-  background-color: #3498DB;
+  /*background-color: #3498DB;*/
 }
 header h1 {
   color: #ffffff;
@@ -103,7 +101,7 @@ header h2 {
 
 .cd-faq {
   width: 90%;
-  max-width: 1024px;
+  max-width: 1440px;
   margin: 2em auto;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
@@ -195,7 +193,7 @@ header h2 {
     position: absolute;
     top: 0;
     left: 0;
-    width: 200px;
+    width: 360px;
     z-index: 2;
   }
   .cd-faq-categories a::before {
@@ -206,7 +204,7 @@ header h2 {
     left: 0;
     height: 100%;
     width: 3px;
-    background-color: #3498DB;
+    /*background-color: #3498DB;*/
     opacity: 0;
     -webkit-transition: opacity 0.2s;
     -moz-transition: opacity 0.2s;
@@ -286,11 +284,13 @@ header h2 {
   .cd-faq-items {
     float: none;
     width: 100%;
-    padding-left: 220px;
   }
   .no-js .cd-faq-items {
     padding-left: 0;
   }
+}
+.cd-faq-items.has-padding {
+  padding-left: 400px;
 }
 
 .cd-close-panel {
@@ -423,7 +423,7 @@ header h2 {
     top: 50%;
     height: 2px;
     width: 13px;
-    background: #2980B9;
+    background: #008966;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     -webkit-transition-property: -webkit-transform;
@@ -463,12 +463,17 @@ header h2 {
     transform: rotate(45deg);
   }
 }
-
-.cd-faq-content p {
-  font-size: 14px;
+.cd-faq-content {
+  font-size: 16px;
   font-size: 0.875rem;
-  line-height: 1.4;
-  color: #6c7d8e;
+  line-height: 1.6;
+  color: #333;
+}
+.cd-faq-content p {
+  font-size: 16px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #333;
 }
 @media only screen and (min-width: 768px) {
   .cd-faq-content {
@@ -543,4 +548,8 @@ header h2 {
   background-color: rgb(239, 239, 239);
   display: block !important;
   padding-right: 0 !important;
+}
+
+.navbar-default {
+  background-color: #00bc8c;
 }
