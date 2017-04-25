@@ -19,6 +19,13 @@ spl_autoload_register( function ( $class_name ) {
 	require_once ROOT . 'app/' . $class_file_name . '.php';
 } );
 
+//$vagrant = new Vagrant( false );
+//$results = $vagrant->get_new_data();
+//echo '<pre>';
+//print_r( $results );
+//echo '</pre>';
+//die( 'EXIT' );
+
 // Initiate the app.
 $app = new Dontu();
 
@@ -78,6 +85,7 @@ $sections = $app->get_main_sections( $search_q );
 	<script src="js/vendors/wysihtml5/bootstrap-wysihtml5-0.0.2/wysihtml5-0.3.0.js"></script> <!-- WYSIHTML Editable -->
 	<script src="js/vendors/wysihtml5/bootstrap-wysihtml5-0.0.2/bootstrap-wysihtml5-0.0.2.js"></script> <!-- WYSIHTML Bootstrap Editable -->
 	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script> <!-- Toastr Lib  External -->
+	<script src="js/Chart.js"></script> <!-- Chart.js Library -->
 
 	<script src="js/dontu.js"></script> <!-- Andrei Dontu Scripts -->
 	<title>Andrei Dontu | Web</title>
@@ -153,6 +161,117 @@ $sections = $app->get_main_sections( $search_q );
         <?php } ?>
 
 		<div class="cd-faq-items <?php if ( $app->is_logged() ) { echo 'has-padding';  }?>">
+
+            <ul id="charts-data" class="cd-faq-group">
+                <li style="position: relative" class="content-visible">
+                    <a class="cd-faq-trigger" href="#0"><span id="charts_title">Chart Title</span></a>
+                    <div class="cd-faq-content" id="chart_content" style="display: block;">
+                        <span style="display: block; width: 900px; margin: auto;">
+                            <canvas id="cpuChart" width="300" height="300" style="display: block; float: left;"></canvas>
+                            <canvas id="memChart" width="300" height="300" style="display: block; float: left;"></canvas>
+                            <canvas id="diskChart" width="300" height="300" style="display: block; float: left;"></canvas>
+                        </span>
+                        <span>
+                            <hr style="clear: both;" />
+                        </span>
+                        <script>
+                            var ctx = document.getElementById("cpuChart");
+                            var cty = document.getElementById("memChart");
+                            var ctz = document.getElementById("diskChart");
+                            var cpuChart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ["Windows", "Orange"],
+                                    datasets: [{
+                                        label: 'CPU',
+                                        data: [6, 0.5],
+                                        backgroundColor: [
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero:true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+
+                            var memChart = new Chart(cty, {
+                                type: 'bar',
+                                data: {
+                                    labels: ["Windows", "Orange"],
+                                    datasets: [{
+                                        label: 'Memory',
+                                        data: [40.09, 3.83],
+                                        backgroundColor: [
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero:true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+
+                            var diskChart = new Chart(ctz, {
+                                type: 'bar',
+                                data: {
+                                    labels: ["Windows", "Orange"],
+                                    datasets: [{
+                                        label: 'Disk Usage',
+                                        data: [69.89, 10],
+                                        backgroundColor: [
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: false,
+                                    scales: {
+                                        yAxes: [{
+                                            ticks: {
+                                                beginAtZero:true
+                                            }
+                                        }]
+                                    }
+                                }
+                            });
+                        </script>
+                    </div> <!-- cd-faq-content -->
+                </li>
+            </ul>
+
 			<?php
 			if( isset( $search_q ) && empty( $sections ) ) {
                 echo '<div class="alert alert-warning" role="alert"><i class="fa fa-info-circle"></i> Nu am gasit informatia cautata. Va rugam sa reincercati!</div>';

@@ -8,6 +8,6 @@ Write-Host ($avg | Format-List | Out-String)
 Write-Host ($mem | Format-List | Out-String)
 Write-Host ($free | Format-List | Out-String)
 
-$Outputreport = "{ 'win10': { 'name':, $computername, 'cpu': '$avg%', 'mem': '$mem%', 'disk': '$free%' } }"
+$Outputreport="{ `"win10`": { `"name`": `"windows-10`", `"cpu`": `"$avg%`", `"mem`": `"$mem%`", `"disk`": `"$free%`" } }"
 
-$Outputreport | out-file C:\vagrant_data\res_win.json
+$Outputreport|out-file -encoding utf8 C:\vagrant_data\res_win.json

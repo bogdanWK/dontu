@@ -1,2 +1,1 @@
-{ 'ubt64': { 'name': ubuntu-xenial, 'cpu': 0.73%		, 'mem': 4.13%		, 'disk': 10%		 } }
-{ 'ubt64': { 'name': ubuntu-xenial, 'cpu': 0.86%, 'mem': 4.23%, 'disk': 10% } }
+{ "ubt64": { "name": "ubuntu-xenial", "cpu": "0.00%", "mem": "3.83%", "disk": "10%" } }

@@ -1,8 +1,10 @@
 # Git ignore file for @package dontu
 .idea
+vagrant/*
 vagrant/data/*
 !vagrant/data/sys_mon.ps1
 !vagrant/data/sys_mon.sh
+!vagrant/data/res_*
 vagrant/ubuntu64/*
 vagrant/win10/*
 !vagrant/ubuntu64/Vagrantfile
