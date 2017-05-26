@@ -6,7 +6,7 @@
 
 // Constants definition
 define( 'ROOT', __DIR__ . '/' );
-define( 'ROOT_URL', 'http://localhost/dontu/dontu/' );
+define( 'ROOT_URL', 'http://localhost/dontu/' );
 
 /**
  * The auto loading function.
@@ -164,8 +164,9 @@ $sections = $app->get_main_sections( $search_q );
 
             <ul id="charts-data" class="cd-faq-group">
                 <li style="position: relative" class="content-visible">
-                    <a class="cd-faq-trigger" href="#0"><span id="charts_title">Chart Title</span></a>
+                    <a class="cd-faq-trigger" href="#0"><span id="charts_title">Chart</span></a>
                     <div class="cd-faq-content" id="chart_content" style="display: block;">
+                        <h3>Last Read</h3>
                         <span style="display: block; width: 900px; margin: auto;">
                             <canvas id="cpuChart" width="300" height="300" style="display: block; float: left;"></canvas>
                             <canvas id="memChart" width="300" height="300" style="display: block; float: left;"></canvas>
@@ -174,17 +175,213 @@ $sections = $app->get_main_sections( $search_q );
                         <span>
                             <hr style="clear: both;" />
                         </span>
+                        <h3>History</h3>
+                        <span style="display: block; width: 900px; margin: auto;">
+                            <canvas id="history-cpu" width="900" height="300" style="display: block;"></canvas>
+                            <canvas id="history-mem" width="900" height="300" style="display: block;"></canvas>
+                            <canvas id="history-disk" width="900" height="300" style="display: block;"></canvas>
+                        </span>
+                        <span>
+                            <hr style="clear: both;" />
+                        </span>
+                        <button type="button" class="btn btn-success btn-lg btn-block" onclick="return getHistoryData();"><span class="fa fa-chevron-circle-up"></span> Boot VM's & Get Data </button>
+                        <?php
+                        $history_data = $app->get_history();
+                        $display_history = array();
+                        $display_history[0] = array(
+                                'read_date' => date( 'Y-m-d H:i:s' ),
+                                'cpu_win' => 0,
+                                'cpu_ubt' => 0,
+                                'mem_win' => 0,
+                                'mem_ubt' => 0,
+                                'dsk_win' => 0,
+                                'dsk_ubt' => 0
+                        );
+                        $i = 0;
+                        foreach ( $history_data as $row ) {
+	                        $display_history[$i] = array(
+		                        'read_date' => $row['read_date'],
+		                        'cpu_win' => $row['cpu_win'],
+		                        'cpu_ubt' => $row['cpu_ubt'],
+		                        'mem_win' => $row['mem_win'],
+		                        'mem_ubt' => $row['mem_ubt'],
+		                        'dsk_win' => $row['dsk_win'],
+		                        'dsk_ubt' => $row['dsk_ubt']
+                            );
+	                        $i++;
+                        }
+
+                        $dataSetNowCPU = '['.$display_history[0]['cpu_win'].','.$display_history[0]['cpu_ubt'].']';
+                        $dataSetNowMEM = '['.$display_history[0]['mem_win'].','.$display_history[0]['mem_ubt'].']';
+                        $dataSetNowDSK = '['.$display_history[0]['dsk_win'].','.$display_history[0]['dsk_ubt'].']';
+
+                        $dataSetHistoryLabels = '[';
+
+                        $dataSetHistoryCPU_win = '[';
+                        $dataSetHistoryCPU_ubt = '[';
+                        $dataSetHistoryMEM_win = '[';
+                        $dataSetHistoryMEM_ubt = '[';
+                        $dataSetHistoryDSK_win = '[';
+                        $dataSetHistoryDSK_ubt = '[';
+                        if( sizeof( $display_history ) > 0 ) {
+	                        for ( $j = sizeof( $display_history ) - 1; $j >= 0; $j-- ) {
+		                        $dataSetHistoryLabels .= '"' . date( 'M, d H:i:s', strtotime( $display_history[$j]['read_date'] ) ) . '"';
+
+		                        $dataSetHistoryCPU_win .= $display_history[$j]['cpu_win'];
+		                        $dataSetHistoryCPU_ubt .= $display_history[$j]['cpu_ubt'];
+		                        $dataSetHistoryMEM_win .= $display_history[$j]['mem_win'];
+		                        $dataSetHistoryMEM_ubt .= $display_history[$j]['mem_ubt'];
+		                        $dataSetHistoryDSK_win .= $display_history[$j]['dsk_win'];
+		                        $dataSetHistoryDSK_ubt .= $display_history[$j]['dsk_ubt'];
+		                        if( $j > 0 ) {
+			                        $dataSetHistoryLabels .= ',';
+			                        $dataSetHistoryCPU_win .= ',';
+			                        $dataSetHistoryCPU_ubt .= ',';
+			                        $dataSetHistoryMEM_win .= ',';
+			                        $dataSetHistoryMEM_ubt .= ',';
+			                        $dataSetHistoryDSK_win .= ',';
+			                        $dataSetHistoryDSK_ubt .= ',';
+		                        }
+	                        }
+                        }
+                        $dataSetHistoryLabels .= ']';
+                        $dataSetHistoryCPU_win .= ']';
+                        $dataSetHistoryCPU_ubt .= ']';
+                        $dataSetHistoryMEM_win .= ']';
+                        $dataSetHistoryMEM_ubt .= ']';
+                        $dataSetHistoryDSK_win .= ']';
+                        $dataSetHistoryDSK_ubt .= ']';
+                        ?>
                         <script>
+                            var cth_cpu = document.getElementById("history-cpu");
+                            var cth_mem = document.getElementById("history-mem");
+                            var cth_dsk = document.getElementById("history-disk");
                             var ctx = document.getElementById("cpuChart");
                             var cty = document.getElementById("memChart");
                             var ctz = document.getElementById("diskChart");
+
+                            var historyLabels = <?php echo $dataSetHistoryLabels ?>;
+                            var options = {
+                                responsive: false,
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero:true
+                                        }
+                                    }]
+                                }
+                            };
+
+                            var dataSetNowCPU = <?php echo $dataSetNowCPU ?>;
+                            var dataSetNowMEM = <?php echo $dataSetNowMEM ?>;
+                            var dataSetNowDSK = <?php echo $dataSetNowDSK ?>;
+
+                            var dataSetHistoryCPU_win = <?php echo $dataSetHistoryCPU_win ?>;
+                            var dataSetHistoryCPU_ubnt = <?php echo $dataSetHistoryCPU_ubt ?>;
+
+                            var dataSetHistoryMEM_win = <?php echo $dataSetHistoryMEM_win ?>;
+                            var dataSetHistoryMEM_ubnt = <?php echo $dataSetHistoryMEM_ubt ?>;
+
+                            var dataSetHistoryDSK_win = <?php echo $dataSetHistoryDSK_win ?>;
+                            var dataSetHistoryDSK_ubnt = <?php echo $dataSetHistoryDSK_ubt ?>;
+
+                            var historyChartCPU = new Chart(cth_cpu, {
+                                type: 'line',
+                                data: {
+                                    labels: historyLabels,
+                                    datasets: [
+                                        {
+                                            label: 'CPU-Win',
+                                            data: dataSetHistoryCPU_win,
+                                            backgroundColor: [
+                                                'rgba(54, 162, 235, 0.2)'
+                                            ],
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'CPU-Ubt',
+                                            data: dataSetHistoryCPU_ubnt,
+                                            backgroundColor: [
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                },
+                                options: options
+                            });
+
+                            var historyChartMEM = new Chart(cth_mem, {
+                                type: 'line',
+                                data: {
+                                    labels: historyLabels,
+                                    datasets: [
+                                        {
+                                            label: 'MEM-Win',
+                                            data: dataSetHistoryMEM_win,
+                                            backgroundColor: [
+                                                'rgba(54, 162, 235, 0.2)'
+                                            ],
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'MEM-Ubt',
+                                            data: dataSetHistoryMEM_ubnt,
+                                            backgroundColor: [
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                },
+                                options: options
+                            });
+
+                            var historyChartDSK = new Chart(cth_dsk, {
+                                type: 'line',
+                                data: {
+                                    labels: historyLabels,
+                                    datasets: [
+                                        {
+                                            label: 'DSK-Win',
+                                            data: dataSetHistoryDSK_win,
+                                            backgroundColor: [
+                                                'rgba(54, 162, 235, 0.2)'
+                                            ],
+                                            borderColor: 'rgba(54, 162, 235, 1)',
+                                            borderWidth: 1
+                                        },
+                                        {
+                                            label: 'DSK-Ubt',
+                                            data: dataSetHistoryDSK_ubnt,
+                                            backgroundColor: [
+                                                'rgba(255, 159, 64, 0.2)'
+                                            ],
+                                            borderColor: [
+                                                'rgba(255, 159, 64, 1)'
+                                            ],
+                                            borderWidth: 1
+                                        }
+                                    ]
+                                },
+                                options: options
+                            });
+
                             var cpuChart = new Chart(ctx, {
                                 type: 'bar',
                                 data: {
-                                    labels: ["Windows", "Orange"],
+                                    labels: ["Windows", "Ubuntu"],
                                     datasets: [{
                                         label: 'CPU',
-                                        data: [6, 0.5],
+                                        data: dataSetNowCPU,
                                         backgroundColor: [
                                             'rgba(54, 162, 235, 0.2)',
                                             'rgba(255, 159, 64, 0.2)'
@@ -196,25 +393,16 @@ $sections = $app->get_main_sections( $search_q );
                                         borderWidth: 1
                                     }]
                                 },
-                                options: {
-                                    responsive: false,
-                                    scales: {
-                                        yAxes: [{
-                                            ticks: {
-                                                beginAtZero:true
-                                            }
-                                        }]
-                                    }
-                                }
+                                options: options
                             });
 
                             var memChart = new Chart(cty, {
                                 type: 'bar',
                                 data: {
-                                    labels: ["Windows", "Orange"],
+                                    labels: ["Windows", "Ubuntu"],
                                     datasets: [{
                                         label: 'Memory',
-                                        data: [40.09, 3.83],
+                                        data: dataSetNowMEM,
                                         backgroundColor: [
                                             'rgba(54, 162, 235, 0.2)',
                                             'rgba(255, 159, 64, 0.2)'
@@ -226,25 +414,16 @@ $sections = $app->get_main_sections( $search_q );
                                         borderWidth: 1
                                     }]
                                 },
-                                options: {
-                                    responsive: false,
-                                    scales: {
-                                        yAxes: [{
-                                            ticks: {
-                                                beginAtZero:true
-                                            }
-                                        }]
-                                    }
-                                }
+                                options: options
                             });
 
                             var diskChart = new Chart(ctz, {
                                 type: 'bar',
                                 data: {
-                                    labels: ["Windows", "Orange"],
+                                    labels: ["Windows", "Ubuntu"],
                                     datasets: [{
                                         label: 'Disk Usage',
-                                        data: [69.89, 10],
+                                        data: dataSetNowDSK,
                                         backgroundColor: [
                                             'rgba(54, 162, 235, 0.2)',
                                             'rgba(255, 159, 64, 0.2)'
@@ -256,16 +435,7 @@ $sections = $app->get_main_sections( $search_q );
                                         borderWidth: 1
                                     }]
                                 },
-                                options: {
-                                    responsive: false,
-                                    scales: {
-                                        yAxes: [{
-                                            ticks: {
-                                                beginAtZero:true
-                                            }
-                                        }]
-                                    }
-                                }
+                                options: options
                             });
                         </script>
                     </div> <!-- cd-faq-content -->

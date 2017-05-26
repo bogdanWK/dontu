@@ -83,6 +83,13 @@ jQuery(document).ready(function($){
 
 String.prototype.capitalize = function() {
     return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
+function getHistoryData() {
+    $.post('?post', { name: 'mock-history' }, function ( result ) {
+        toastr[result.type]( result.message, result.type.capitalize() );
+    }, 'json');
+    return true;
 }
 
 function newSubElement( elem, parent_id ) {

@@ -306,6 +306,18 @@ class Database {
 		return $this->insert( 'sub_sections', $array_data );
 	}
 
+	/**
+	 * Utility method to insert a new history entry.
+	 *
+	 * @since   1.0.0
+	 * @access  public
+	 * @param   array   $array_data The data to be inserted.
+	 * @return bool
+	 */
+	public function insert_history( $array_data ) {
+		return $this->insert( 'history', $array_data );
+	}
+
     /**
      * Utility method to update a section.
      *
@@ -336,6 +348,18 @@ class Database {
 			'id' => $id
 		);
 		return $this->update( 'sub_sections', $array_data, $conditions );
+	}
+
+	/**
+	 * Utility method to delete history.
+	 *
+	 * @since   1.0.0
+	 * @access  public
+	 * @param   array   $conditions_array   The conditions to filter by.
+	 * @return bool
+	 */
+	public function delete_history( $conditions_array ) {
+		return $this->delete( 'history', $conditions_array );
 	}
 
     /**
@@ -395,6 +419,22 @@ class Database {
 			'id' => $id
 		);
 		return $this->update( 'layout_data', $array_data, $conditions );
+	}
+
+	/**
+	 * Utility method to retrieve the history data from DB.
+	 *
+	 * @since   1.0.0
+	 * @access  public
+	 * @param   integer $limit  The rows limit. (*optional. Default 100)
+	 * @return array
+	 */
+	public function get_history_data( $limit = 100 ) {
+		$sql = '
+			SELECT * FROM `history` 
+			ORDER BY `read_date` DESC
+			LIMIT '. $limit;
+		return $this->find( $sql );
 	}
 
     /**

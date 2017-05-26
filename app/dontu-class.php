@@ -148,11 +148,78 @@ class Dontu {
 				$result['type'] = 'error';
 				$result['message'] = 'Nu am putut modifica subtitlul!';
 			}
+		} else if ( isset( $post['name'] ) && $post['name'] == 'make-history' ) {
+			$vagrant = new Vagrant();
+			$new_results = $vagrant->get_new_data();
+			$array_data = array();
+			foreach ( $new_results['win10'] as $index => $value ) {
+				if( $index == 'cpu' ) {
+					$array_data['cpu_win'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+				if( $index == 'mem' ) {
+					$array_data['mem_win'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+				if( $index == 'disk' ) {
+					$array_data['dsk_win'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+			}
+			foreach ( $new_results['win10'] as $index => $value ) {
+				if( $index == 'cpu' ) {
+					$array_data['cpu_ubt'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+				if( $index == 'mem' ) {
+					$array_data['mem_ubt'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+				if( $index == 'disk' ) {
+					$array_data['dsk_ubt'] = ( isset( $value ) && $value > 0 ) ? $value : 0;
+				}
+			}
+			$array_data['read_date'] = date( 'Y-m-d H:i:s' );
+			$res = $this->save_history( $array_data );
+			if( $res ) {
+				$result['type'] = 'success';
+				$result['message'] = 'History adaugat cu success';
+			} else {
+				$result['type'] = 'error';
+				$result['message'] = 'Nu am putut adauga history!';
+			}
+		} else if ( isset( $post['name'] ) && $post['name'] == 'mock-history' ) {
+			$array_data = array();
+			$array_data['cpu_win'] = mt_rand (1.5*10, 75*10) / 10;
+			$array_data['mem_win'] = mt_rand (3.5*10, 75*10) / 10;
+			$array_data['dsk_win'] = mt_rand (1.8*10, 95*10) / 10;
+
+			$array_data['cpu_ubt'] = mt_rand (0.4*10, 41.5*10) / 10;
+			$array_data['mem_ubt'] = mt_rand (0.3*10, 51.5*10) / 10;
+			$array_data['dsk_ubt'] = mt_rand (0.1*10, 41.5*10) / 10;
+
+			$array_data['read_date'] = date( 'Y-m-d H:i:s' );
+			$res = $this->save_history( $array_data );
+			if( $res ) {
+				$result['type'] = 'success';
+				$result['message'] = 'History adaugat cu success';
+			} else {
+				$result['type'] = 'error';
+				$result['message'] = 'Nu am putut adauga history!';
+			}
 		} else {
 			$result['type'] = 'error';
 			$result['message'] = 'Nu am putut procesa cererea!';
 		}
 		return json_encode( $result );
+	}
+
+	/**
+	 * Method to save history data.
+	 *
+	 * @since   1.0.0
+	 * @access  public
+	 * @param   array   $array_data Data to be stored.
+	 * @return bool
+	 */
+	public function save_history( $array_data ) {
+		$db = $this->db;
+		return $db->insert_history( $array_data );
 	}
 
     /**
@@ -229,6 +296,19 @@ class Dontu {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Method to retrieve history data.
+	 *
+	 * @since   1.0.0
+	 * @access  public
+	 * @param   string  $search_q    The search query.
+	 * @return array
+	 */
+	public function get_history() {
+		$db = $this->db;
+		return $db->get_history_data();
 	}
 
     /**

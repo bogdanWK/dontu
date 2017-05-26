@@ -11,6 +11,6 @@ $configs = array(
 		'dbhost' => 'localhost',
 		'dbname' => 'licenta_andrei_dontu',
 		'dbuser' => 'root',
-		'dbpass' => 'asdQWE123',
+		'dbpass' => '',
 	)
 );
